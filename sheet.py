@@ -2,17 +2,19 @@ class Sheet():
 
     def __init__(self, num_players):
         global notecard
-        notecard = [['Colonel Mustard', 'Professor Plum','Mr. Green', 'Mrs. Peacock', 'Miss Scarlet', 'Mrs. White', 
-                   'Knife', 'Candlestick', 'Revolver', 'Rope', 'Lead Pipe', 'Wrench', 
-                   'Hall', 'Lounge', 'Dining Room', 'Kitchen', 'Ballroom', 'Conservatory', 'Billiard Room', 'Library', 'Study']] + [] * num_players
+        notecard = [['Col. Mustard\t', 'Prof. Plum\t','Mr. Green\t', 'Mrs. Peacock\t', 'Miss Scarlet\t', 'Mrs. White\t', 
+                   'Knife\t\t', 'Candlestick\t', 'Revolver\t', 'Rope\t\t', 'Lead Pipe\t', 'Wrench\t', 
+                   'Hall\t\t', 'Lounge\t', 'Dining Room\t', 'Kitchen\t', 'Ballroom\t', 'Conservatory\t', 'Billiard Room\t', 'Library\t', 'Study\t\t']] + ([[' '] * 21] * num_players)
     
     def __str__(self):
-        s = ' - ' * len(notecard)
+        s = '=' * 18 + '=' * len(notecard) * 3
         for j in range(21):
-            s += '\n | '
+            s += '\n| '
             for i in range(len(notecard)):
                 s += notecard[i][j] + ' | '
-        s += '\n' + ' - ' * len(notecard)
+            if j == 5 or j == 11:
+                s += '\n' + '=' * 18 + '=' * len(notecard) * 3
+        s += '\n' + '=' * 18 + '=' * len(notecard) * 3
         return s
 
     def move(self):
@@ -29,12 +31,12 @@ class Sheet():
             '\n\t', 4, ' - ', notecard[0][15], '\n\t', 5, ' - ', notecard[0][16], '\n\t', 6, ' - ', notecard[0][17], '\n\t', 7, ' - ', notecard[0][18],
             '\n\t', 8, ' - ', notecard[0][19], '\n\t', 9, ' - ', notecard[0][20])
         room = (int(input('Enter a number: ')) + 11)
-        print('\nThis move has been logged')
-        print(notecard[0][person], notecard[0][weapon], notecard[0][room])
+        
 
 def test_sheet():
     s = Sheet(3)
-    s.move()
+    # s.move()
+    print(s)
 
 if __name__ == '__main__':
     test_sheet()
