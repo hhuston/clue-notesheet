@@ -1,7 +1,8 @@
 class Sheet():
 
-    def __init__(self, num_players):
+    def __init__(self, p):
         global notecard
+        global players
         notecard = [['Col. Mustard\t', 'Prof. Plum\t','Mr. Green\t', 'Mrs. Peacock\t', 'Miss Scarlet\t', 'Mrs. White\t', 
                    'Knife\t\t', 'Candlestick\t', 'Revolver\t', 'Rope\t\t', 'Lead Pipe\t', 'Wrench\t', 
                    'Hall\t\t', 'Lounge\t', 'Dining Room\t', 'Kitchen\t', 'Ballroom\t', 'Conservatory\t', 'Billiard Room\t', 'Library\t', 'Study\t\t']] + ([[' '] * 21] * num_players)
@@ -33,8 +34,9 @@ class Sheet():
         room = (int(input('Enter a number: ')) + 11)
         
 
+
 def test_sheet():
-    s = Sheet(3)
+    s = Sheet(['Chris', 'Winnie', 'Harrison'])
     # s.move()
     print(s)
 
