@@ -41,12 +41,12 @@ class Sheet():
         prompt = 'Enter a number: '
         print('For each prompt, please enter the number that corresponds to the suggestion\n')
         
-        print('\n\nWho made the suggestion?')
+        print('Who made the suggestion?')
         for i in range(1, len(players) + 1):
             print('\n\t', i, ' - ', players[i - 1])
         s = (int(input(prompt)) - 1)
         
-        print('Who is being suggested?')
+        print('\n\nWho is being suggested?')
         for i in range(1, 7):
             print('\n\t', i, ' - ', notecard[0][i - 1])
         p = (int(input(prompt)) - 1)
@@ -99,7 +99,7 @@ class Sheet():
                     if i != d:
                         notecard[i][p] = '-'
                         trackers[i][23] += 1
-            else:
+            elif s != len(players) - 1:
                 trackers[d][21] = trackers[d][21] + 1 if trackers[d][21] != 0 else 3
                 count = trackers[d][21]
 
@@ -112,7 +112,16 @@ class Sheet():
                 if notecard[d][r] != '-':
                     notecard[d][r] = '*'
                     trackers[d][r] += count
-
+            else:
+                print('\n\nWhat card did ', players[d], ' show you?\n\t1 - ', notecard[0][p], '\n\t2 - ', notecard[0][w], '\n\t3 - ', notecard[0][r])
+                shown_card = int(input(prompt))
+                shown_card = p if shown_card == 1 else w if shown_card == 2 else w
+                notecard[d + 1][w] = 'X'
+                trackers[d][22] += 1
+                for i in range(1, len(notecard) - 1):
+                    if i != d:
+                        notecard[i][w] = '-'
+                        trackers[i][23] += 1
         else:
             players_skipped = [x for x in list(range(len(players))) if x != s]
         for i in players_skipped:
