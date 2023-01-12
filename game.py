@@ -2,7 +2,7 @@ import sheet
 
 class ClueGame():
     
-    def start_game(self):
+    def play_game(self):
         game_sheet = sheet.NoteSheet(self.get_players())
         print('\n')
         game_sheet.move(game_sheet.get_move_input())

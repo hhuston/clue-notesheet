@@ -3,9 +3,9 @@ class Sheet():
     def __init__(self, p):
         global notecard
         global players
-        global trackers
+        global possibilities
         players = p
-        trackers = [[0] * 24 for _ in range(len(players) + 1)]
+        possibilities = [[0] * 24 for _ in range(len(players) + 1)]
         notecard = [['Col. Mustard\t', 'Prof. Plum\t','Mr. Green\t', 'Mrs. Peacock\t', 'Miss Scarlet\t', 'Mrs. White\t', 
                    'Knife\t\t', 'Candlestick\t', 'Revolver\t', 'Rope\t\t', 'Lead Pipe\t', 'Wrench\t', 
                    'Hall\t\t', 'Lounge\t', 'Dining Room\t', 'Kitchen\t', 'Ballroom\t', 'Conservatory\t', 'Billiard Room\t', 'Library\t', 'Study\t\t']] + [[' '] * 21 for _ in range(len(players))]
@@ -19,17 +19,17 @@ class Sheet():
                 notecard[len(notecard) - 1][i] = 'X'
                 for j in range(1, len(notecard) - 1):
                     notecard[j][i] = '-'
-                    trackers[j][23] += 1
+                    possibilities[j][23] += 1
             else:
                 notecard[len(notecard) - 1][i] = '-'
 
     def set_card_owner(self, person, card):
         notecard[person][card] = 'X'
-        trackers[person][22] += 1
+        possibilities[person][22] += 1
         for i in range(1, len(notecard) - 1):
             if i != person:
                 notecard[i][card] = '-'
-                trackers[i][23] += 1
+                possibilities[i][23] += 1
 
     def get_move_input(self):
         prompt = 'Enter a number: '
@@ -66,27 +66,31 @@ class Sheet():
         global players_skipped
         players_skipped = []
         if d != len(players):
+            i = s + 1
+            while True:
+                if i == len(players):
+                    i = 0
+                if i == d:
+                    break
+                players_skipped += [i]
+                i += 1
+            d += 1
             self.record_player_disprove(s, p, w, r, d)
         else:
             players_skipped = [x for x in list(range(len(players))) if x != s]
+        self.fill_skipped_players(p, w, r)
+        for player in range(1, len(players) + 1):
+            self.update_possibile_cards(player)
+
+    def fill_skipped_players(self, p, w, r):
+        global players_skipped
         for i in players_skipped:
-            print(notecard[i+1][p])
             for j in [p, w, r]:
                 if notecard[i+1][j] != '-':
                     notecard[i+1][j]= '-'
-                    trackers[i+1][23] += 1
+                    possibilities[i+1][23] += 1
 
     def record_player_disprove(self, s, p, w, r, d):
-        global players_skipped
-        i = s + 1
-        while True:
-            if i == len(players):
-                i = 0
-            if i == d:
-                break
-            players_skipped += [i]
-            i += 1
-        d += 1
         if notecard[d][p] == '-' and notecard[d][w] == '-':
             self.set_card_owner(d, r)
         elif notecard[d][p] == '-' and notecard[d][r] == '-':
@@ -94,12 +98,12 @@ class Sheet():
         elif notecard[d][w] == '-' and notecard[d][r] == '-':
             self.set_card_owner(d, p)
         elif s != len(players) - 1:
-            trackers[d][21] = trackers[d][21] + 1 if trackers[d][21] != 0 else 3
-            count = trackers[d][21]
+            possibilities[d][21] = possibilities[d][21] + 1 if possibilities[d][21] != 0 else 3
+            count = possibilities[d][21]
             for j in [p, w, r]:
                 if notecard[d][j] != '-':
                     notecard[d][j] = '*'
-                    trackers[d][j] += count
+                    possibilities[d][j] += count
         else:
             print('\n\nWhat card did', players[d - 1], 'show you?\n\t1 - ', notecard[0][p])
             print('\t2 - ', notecard[0][w], '\n\t3 - ', notecard[0][r])
@@ -113,17 +117,9 @@ class Sheet():
                     shown_card = r
             self.set_card_owner(d, shown_card)
 
-    def check_possibile_cards(self, player):
-        # for i in range(1, len(players)):
-        if trackers[player][22] == 3 and trackers[player][23] != 18:
-            notecard[player] = list(map(lambda x: '-' if x == ' ' else 'X', notecard[player]))
-            return
-        if trackers[player][23] == 18 and trackers[player][22] != 3:
-            for j in range(21):
-                if notecard[player][j] == ' ':
-                    self.set_card_owner(player, j)
-            return
-        t3, t4, t5 = self.get_possible_cards(player)
+    def update_possibile_cards(self, player):
+        self.all_cards_found(player)
+        t3, t4, t5 = self.get_possibilities(player)
         for j in [3, 4, 5, 4, 3]:
             if j == 3 and len(t3) == 1:
                 self.one_in_tracker(player, t3, t4, t5)
@@ -136,16 +132,24 @@ class Sheet():
             for j in range(21):
                 if j not in all_trackers:
                     notecard[player][j] = '-'
-                    trackers[player][23] += 1
+                    possibilities[player][23] += 1
 
-    def get_possible_cards(self, player):
+    def all_cards_found(self, player):
+        if possibilities[player][22] == 3 and possibilities[player][23] != 18:
+            notecard[player] = list(map(lambda x: '-' if x == ' ' else 'X', notecard[player]))
+        elif possibilities[player][23] == 18 and possibilities[player][22] != 3:
+            for card in range(21):
+                if notecard[player][j] == ' ':
+                    self.set_card_owner(player, card)
+
+    def get_possibilities(self, player):
         tracker_3, tracker_4, tracker_5 = [], [], []
         for j in range(21):
-            if trackers[player][j] in [3, 7, 8, 12] and notecard[player][j] != '-':
+            if possibilities[player][j] in [3, 7, 8, 12] and notecard[player][j] != '-':
                 tracker_3 += [j]
-            if trackers[player][j] in [4, 7, 9, 12] and notecard[player][j] != '-':
+            if possibilities[player][j] in [4, 7, 9, 12] and notecard[player][j] != '-':
                 tracker_4 += [j]
-            if trackers[player][j] in [5, 8, 9, 12] and notecard[player][j] != '-':
+            if possibilities[player][j] in [5, 8, 9, 12] and notecard[player][j] != '-':
                 tracker_5 += [j]
         return tracker_3, tracker_4, tracker_5
 
