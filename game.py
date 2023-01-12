@@ -1,11 +1,16 @@
-import sheet
+from sheet import NoteSheet
 
 class ClueGame():
     
     def play_game(self):
-        game_sheet = sheet.NoteSheet(self.get_players())
+        game_sheet = NoteSheet(self.get_players())
         print('\n')
-        game_sheet.move(game_sheet.get_move_input())
+        while not game_sheet.answer_known():
+            print(game_sheet)
+            s, p, w, r, d = game_sheet.get_move_input()
+            game_sheet.move(s, p, w, r, d)
+        person, weapon, room = game_sheet.answer()
+        print('It was', person, 'with the', weapon, 'in the', room)
 
     def get_players(self):
         while True:
@@ -18,4 +23,7 @@ class ClueGame():
             else:
                 return names
     
+if __name__ == '__main__':
+    game = ClueGame()
+    game.play_game()
     

@@ -1,15 +1,17 @@
-class Sheet():
+class NoteSheet():
 
     def __init__(self, p):
         global notecard
         global players
         global possibilities
+        global answers
         players = p
         possibilities = [[0] * 24 for _ in range(len(players) + 1)]
         notecard = [['Col. Mustard\t', 'Prof. Plum\t','Mr. Green\t', 'Mrs. Peacock\t', 'Miss Scarlet\t', 'Mrs. White\t', 
                    'Knife\t\t', 'Candlestick\t', 'Revolver\t', 'Rope\t\t', 'Lead Pipe\t', 'Wrench\t', 
                    'Hall\t\t', 'Lounge\t', 'Dining Room\t', 'Kitchen\t', 'Ballroom\t', 'Conservatory\t', 'Billiard Room\t', 'Library\t', 'Study\t\t']] + [[' '] * 21 for _ in range(len(players))]
         print('Enter the number of your cards and the communal cards, separated by spaces: ')
+        answers = [len(players)] * 21 + [''] * 3
         for i in range(1, 22):
             print('\n\t', i, ' - ', notecard[0][i - 1])
         user_cards = input('Enter your cards: ').split(' ')
@@ -84,11 +86,13 @@ class Sheet():
 
     def fill_skipped_players(self, p, w, r):
         global players_skipped
+        global answers
         for i in players_skipped:
             for j in [p, w, r]:
                 if notecard[i+1][j] != '-':
-                    notecard[i+1][j]= '-'
+                    notecard[i+1][j] = '-'
                     possibilities[i+1][23] += 1
+                    answers[j] -= 1
 
     def record_player_disprove(self, s, p, w, r, d):
         if notecard[d][p] == '-' and notecard[d][w] == '-':
@@ -133,13 +137,17 @@ class Sheet():
                 if j not in all_trackers:
                     notecard[player][j] = '-'
                     possibilities[player][23] += 1
+                    answers[j] -= 1
 
     def all_cards_found(self, player):
         if possibilities[player][22] == 3 and possibilities[player][23] != 18:
-            notecard[player] = list(map(lambda x: '-' if x == ' ' else 'X', notecard[player]))
+            for card in range(21):
+                if notecard[player][card] == ' ':
+                    notecard[player][card] = '-'
+                    answers[card] -= 1
         elif possibilities[player][23] == 18 and possibilities[player][22] != 3:
             for card in range(21):
-                if notecard[player][j] == ' ':
+                if notecard[player][card] == ' ':
                     self.set_card_owner(player, card)
 
     def get_possibilities(self, player):
@@ -158,16 +166,22 @@ class Sheet():
         if a[0] in b:
             b.remove(a[0])
         if a[0] in c:
-            c.remove(a[0])
+            c.remove(a[0])    
+
+    def answer_known(self):
+        return answers[21] != '' and answers[22] != '' and answers[23] != ''
+
+    def answer(self):
+        return answers[21], answers[22], answers[23]
 
     def __str__(self):
         s = '\n\n\t\t | ' + ' | '.join([name[0] for name in players]) + ' |\n'
-        s += '=' * 18 + '=' * len(notecard) * 3
+        s += '=' * 18 + '=' * len(players) * 4
         for j in range(21):
             s += '\n| '
             for i in range(len(notecard)):
                 s += notecard[i][j] + ' | '
             if j == 5 or j == 11:
-                s += '\n' + '=' * 18 + '=' * len(notecard) * 3
-        s += '\n' + '=' * 18 + '=' * len(notecard) * 3
+                s += '\n' + '=' * 18 + '=' * len(players) * 4
+        s += '\n' + '=' * 18 + '=' * len(players) * 4
         return s
