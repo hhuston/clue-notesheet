@@ -13,7 +13,7 @@ class NoteSheet():
         print('Enter the number of your cards and the communal cards, separated by spaces: ')
         answers = [len(players)] * 21 + [''] * 3
         for i in range(1, 22):
-            print('\n\t', i, ' - ', notecard[0][i - 1])
+            print('\t', i, ' - ', notecard[0][i - 1])
         user_cards = input('Enter your cards: ').split(' ')
         user_cards = [int(x) - 1 for x in user_cards]
         for i in range(21):
@@ -25,42 +25,34 @@ class NoteSheet():
             else:
                 notecard[len(notecard) - 1][i] = '-'
 
-    def set_card_owner(self, person, card):
-        notecard[person][card] = 'X'
-        possibilities[person][22] += 1
-        for i in range(1, len(notecard) - 1):
-            if i != person:
-                notecard[i][card] = '-'
-                possibilities[i][23] += 1
-
     def get_move_input(self):
         prompt = 'Enter a number: '
-        print('For each prompt, please enter the number that corresponds to the suggestion\n')
+        print('For each prompt, please enter the number that corresponds to the suggestion')
         
-        print('Who made the suggestion?')
+        print('\nWho made the suggestion?')
         for i in range(1, len(players) + 1):
-            print('\n\t', i, ' - ', players[i - 1])
+            print('\t', i, ' - ', players[i - 1])
         suggestor = (int(input(prompt)) - 1)
         
-        print('\n\nWhat person is being suggested?')
+        print('\nWhat person is being suggested?')
         for i in range(1, 7):
-            print('\n\t', i, ' - ', notecard[0][i - 1])
+            print('\t', i, ' - ', notecard[0][i - 1])
         person = (int(input(prompt)) - 1)
 
-        print('\n\nWhat weapon is being suggested?')
+        print('\nWhat weapon is being suggested?')
         for i in range(1, 7):
-            print('\n\t', i, ' - ', notecard[0][i + 5])
+            print('\t', i, ' - ', notecard[0][i + 5])
         weapon = (int(input(prompt)) + 5)
 
-        print('\n\nWhat room is being suggested?')
+        print('\nWhat room is being suggested?')
         for i in range(1, 10):
-            print('\n\t', i, ' - ', notecard[0][i + 11])
+            print('\t', i, ' - ', notecard[0][i + 11])
         room = (int(input(prompt)) + 11)
 
-        print('\n\nWho disproved the suggestion?')
+        print('\nWho disproved the suggestion?')
         for i in range(1, len(players) + 1):
-            print('\n\t', i, ' - ', players[i - 1])
-        print('\n\t', len(players) + 1, ' -  No one')
+            print('\t', i, ' - ', players[i - 1])
+        print('\t', len(players) + 1, ' -  No one')
         disprover = (int(input(prompt)) - 1)
         return suggestor, person, weapon, room, disprover
 
@@ -76,6 +68,7 @@ class NoteSheet():
                     break
                 players_skipped += [i]
                 i += 1
+            s += 1
             d += 1
             self.record_player_disprove(s, p, w, r, d)
         else:
@@ -89,7 +82,7 @@ class NoteSheet():
         global answers
         for i in players_skipped:
             for j in [p, w, r]:
-                if notecard[i+1][j] != '-':
+                if notecard[i+1][j] == ' ':
                     notecard[i+1][j] = '-'
                     possibilities[i+1][23] += 1
                     answers[j] -= 1
@@ -101,15 +94,14 @@ class NoteSheet():
             self.set_card_owner(d, w)
         elif notecard[d][w] == '-' and notecard[d][r] == '-':
             self.set_card_owner(d, p)
-        elif s != len(players) - 1:
+        elif s != len(players) and d != len(players):
             possibilities[d][21] = possibilities[d][21] + 1 if possibilities[d][21] != 0 else 3
-            count = possibilities[d][21]
             for j in [p, w, r]:
-                if notecard[d][j] != '-':
+                if notecard[d][j] == ' ':
                     notecard[d][j] = '*'
-                    possibilities[d][j] += count
-        else:
-            print('\n\nWhat card did', players[d - 1], 'show you?\n\t1 - ', notecard[0][p])
+                    possibilities[d][j] += possibilities[d][21]
+        elif d != len(players):
+            print('\nWhat card did', players[d - 1], 'show you?\n\t1 - ', notecard[0][p])
             print('\t2 - ', notecard[0][w], '\n\t3 - ', notecard[0][r])
             shown_card = int(input('Enter a number: '))
             match shown_card:
@@ -121,6 +113,16 @@ class NoteSheet():
                     shown_card = r
             self.set_card_owner(d, shown_card)
 
+        
+    def set_card_owner(self, person, card):
+        notecard[person][card] = 'X'
+        possibilities[person][22] += 1
+        for i in range(1, len(notecard) - 1):
+            if i != person:
+                notecard[i][card] = '-'
+                possibilities[i][23] += 1
+
+# Check the logic in these
     def update_possibile_cards(self, player):
         self.all_cards_found(player)
         t3, t4, t5 = self.get_possibilities(player)
@@ -134,7 +136,7 @@ class NoteSheet():
         all_trackers = t3 + t4 + t5
         if len(all_trackers) == 9:
             for j in range(21):
-                if j not in all_trackers:
+                if j not in all_trackers and notecard[player][j] == ' ':
                     notecard[player][j] = '-'
                     possibilities[player][23] += 1
                     answers[j] -= 1
