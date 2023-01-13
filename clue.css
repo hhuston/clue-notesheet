@@ -1,0 +1,37 @@
+body {
+    display: flex;
+    background-color: bisque;
+}
+
+#notecard td, th, table {
+    border: 2px solid black;
+    border-collapse: collapse;
+}
+
+#notecard thead th{
+    min-width: 100px; 
+}
+
+#notecard tbody th{
+    width: 150px; 
+    text-align: left;
+}
+
+#questions ul{
+    list-style-type: none;
+    padding: 0%;
+}
+
+#questions p, h3 {
+    text-align: center;
+}
+
+#questions li{
+    text-align: left;
+}
+
+#questions {
+    min-width: 700px;
+    display: flex;
+    justify-content: space-evenly;
+}
