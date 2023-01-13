@@ -5,6 +5,8 @@ class NoteSheet():
         global players
         global possibilities
         global answers
+        global unowned_cards
+        unowned_cards = [[i for i in range(6)], [i for i in range(6, 12)], [i for i in range(12, 21)]]
         players = p
         possibilities = [[0] * 24 for _ in range(len(players) + 1)]
         notecard = [['Col. Mustard\t', 'Prof. Plum\t','Mr. Green\t', 'Mrs. Peacock\t', 'Miss Scarlet\t', 'Mrs. White\t', 
@@ -19,6 +21,7 @@ class NoteSheet():
         for card in range(21):
             if card in user_cards:
                 notecard[len(notecard) - 1][card] = 'X'
+                map(lambda x, y = card: x.remove(y), unowned_cards)
                 for player in range(1, len(notecard) - 1):
                     notecard[player][card] = '-'
                     possibilities[player][23] += 1
@@ -96,7 +99,7 @@ class NoteSheet():
             possibilities[d][21] = possibilities[d][21] + 1 if possibilities[d][21] != 0 else 3
             for j in [p, w, r]:
                 if notecard[d][j] != '-':
-                    notecard[d][j] = '*' if notecard[d][j] == ' ' else 'X'
+                    notecard[d][j] = '*' if notecard[d][j] == ' ' else notecard[d][j]
                     possibilities[d][j] += possibilities[d][21]
         elif d != len(players):
             print('\nWhat card did', players[d - 1], 'show you?\n\t1 - ', notecard[0][p])
@@ -121,6 +124,7 @@ class NoteSheet():
         
     def set_card_owner(self, owner, card):
         notecard[owner][card] = 'X'
+        map(lambda x: x.remove(card), unowned_cards)
         possibilities[owner][22] += 1
         for player in range(1, len(notecard) - 1):
             if player != owner and notecard[player][card] != '-':
@@ -190,6 +194,9 @@ class NoteSheet():
             answers[22] = notecard[0][card].strip()
         elif answers[card] == 0 and 12 <= card <= 20:
             answers[23] = notecard[0][card].strip()
+        for i in range(3):
+            if len(unowned_cards[i]) == 1:
+                answers[21 + i] = unowned_cards[i][0]
 
 
     def answer_known(self):
