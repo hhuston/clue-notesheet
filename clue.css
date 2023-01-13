@@ -1,6 +1,17 @@
 body {
     display: flex;
+    flex-wrap: wrap;
     background-color: bisque;
+}
+
+#notecard, #questions {
+    flex: 1 1 50%
+}
+
+@media (max-width: 1300px) {
+    #notecard, #questions {
+        flex: 1 1 100%
+    }
 }
 
 #notecard td, th, table {
@@ -22,16 +33,31 @@ body {
     padding: 0%;
 }
 
+#questions li{
+    text-align: left;
+}
+
 #questions p, h3 {
     text-align: center;
 }
 
-#questions li{
-    text-align: left;
+#question button {
+    display: block;
 }
 
 #questions {
     min-width: 700px;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-evenly;
+}
+
+#q1, #q2, #q3 {
+    flex: 1 1 33%
+}
+
+@media (max-width: 500px) {
+    #q1, #q2, #q3 {
+        flex: 1 1 100%
+    }
 }
