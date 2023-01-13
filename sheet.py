@@ -16,14 +16,15 @@ class NoteSheet():
             print('\t', i, ' - ', notecard[0][i - 1])
         user_cards = input('Enter your cards: ').split(' ')
         user_cards = [int(x) - 1 for x in user_cards]
-        for i in range(21):
-            if i in user_cards:
-                notecard[len(notecard) - 1][i] = 'X'
-                for j in range(1, len(notecard) - 1):
-                    notecard[j][i] = '-'
-                    possibilities[j][23] += 1
+        for card in range(21):
+            if card in user_cards:
+                notecard[len(notecard) - 1][card] = 'X'
+                for player in range(1, len(notecard) - 1):
+                    notecard[player][card] = '-'
+                    possibilities[player][23] += 1
             else:
-                notecard[len(notecard) - 1][i] = '-'
+                notecard[len(notecard) - 1][card] = '-'
+                self.update_answers(card)
 
     def get_move_input(self):
         prompt = 'Enter a number: '
@@ -74,31 +75,28 @@ class NoteSheet():
         else:
             players_skipped = [x for x in list(range(len(players))) if x != s]
         self.fill_skipped_players(p, w, r)
-        for player in range(1, len(players) + 1):
+        for player in range(1, len(players)):
+            self.update_possibile_cards(player)
+        for player in range(len(players) - 2, 0, -1):
             self.update_possibile_cards(player)
 
     def fill_skipped_players(self, p, w, r):
         global players_skipped
         global answers
-        for i in players_skipped:
-            for j in [p, w, r]:
-                if notecard[i+1][j] == ' ':
-                    notecard[i+1][j] = '-'
-                    possibilities[i+1][23] += 1
-                    answers[j] -= 1
+        for player in players_skipped:
+            for card in [p, w, r]:
+                if notecard[player + 1][card] != '-':
+                    notecard[player + 1][card] = '-'
+                    possibilities[player + 1][23] += 1
+                    self.update_answers(card)
 
     def record_player_disprove(self, s, p, w, r, d):
-        if notecard[d][p] == '-' and notecard[d][w] == '-':
-            self.set_card_owner(d, r)
-        elif notecard[d][p] == '-' and notecard[d][r] == '-':
-            self.set_card_owner(d, w)
-        elif notecard[d][w] == '-' and notecard[d][r] == '-':
-            self.set_card_owner(d, p)
-        elif s != len(players) and d != len(players):
+        self.only_possibility(p, w, r, d)
+        if s != len(players) and d != len(players):
             possibilities[d][21] = possibilities[d][21] + 1 if possibilities[d][21] != 0 else 3
             for j in [p, w, r]:
-                if notecard[d][j] == ' ':
-                    notecard[d][j] = '*'
+                if notecard[d][j] != '-':
+                    notecard[d][j] = '*' if notecard[d][j] == ' ' else 'X'
                     possibilities[d][j] += possibilities[d][21]
         elif d != len(players):
             print('\nWhat card did', players[d - 1], 'show you?\n\t1 - ', notecard[0][p])
@@ -113,44 +111,49 @@ class NoteSheet():
                     shown_card = r
             self.set_card_owner(d, shown_card)
 
+    def only_possibility(self, p, w, r, d):
+        if notecard[d][p] == '-' and notecard[d][w] == '-':
+            self.set_card_owner(d, r)
+        elif notecard[d][p] == '-' and notecard[d][r] == '-':
+            self.set_card_owner(d, w)
+        elif notecard[d][w] == '-' and notecard[d][r] == '-':
+            self.set_card_owner(d, p)
         
-    def set_card_owner(self, person, card):
-        notecard[person][card] = 'X'
-        possibilities[person][22] += 1
-        for i in range(1, len(notecard) - 1):
-            if i != person:
-                notecard[i][card] = '-'
-                possibilities[i][23] += 1
+    def set_card_owner(self, owner, card):
+        notecard[owner][card] = 'X'
+        possibilities[owner][22] += 1
+        for player in range(1, len(notecard) - 1):
+            if player != owner and notecard[player][card] != '-':
+                notecard[player][card] = '-'
+                possibilities[player][23] += 1
+                self.update_answers(card)
 
-# Check the logic in these
+    # Check the logic in these
     def update_possibile_cards(self, player):
-        self.all_cards_found(player)
+        if possibilities[player][22] == 3 and possibilities[player][23] != 18:
+            self.all_owned_found(player)
+        elif possibilities[player][23] == 18 and possibilities[player][22] != 3:
+            self.all_unowned_found(player)
         t3, t4, t5 = self.get_possibilities(player)
         for j in [3, 4, 5, 4, 3]:
-            if j == 3 and len(t3) == 1:
+            if j == 3 and len(t3) == 1 and notecard[player][t3[0]] != 'X':
                 self.one_in_tracker(player, t3, t4, t5)
-            elif j == 4 and len(t4) == 1:
+            elif j == 4 and len(t4) == 1 and notecard[player][t4[0]] != 'X':
                 self.one_in_tracker(player, t4, t5, t3)
-            elif j == 5 and len(t5) == 1:
+            elif j == 5 and len(t5) == 1 and notecard[player][t5[0]] != 'X':
                 self.one_in_tracker(player, t5, t3, t4)
-        all_trackers = t3 + t4 + t5
-        if len(all_trackers) == 9:
-            for j in range(21):
-                if j not in all_trackers and notecard[player][j] == ' ':
-                    notecard[player][j] = '-'
-                    possibilities[player][23] += 1
-                    answers[j] -= 1
+        self.nine_possibilities(player, t3 + t4 + t5)
 
-    def all_cards_found(self, player):
-        if possibilities[player][22] == 3 and possibilities[player][23] != 18:
-            for card in range(21):
-                if notecard[player][card] == ' ':
-                    notecard[player][card] = '-'
-                    answers[card] -= 1
-        elif possibilities[player][23] == 18 and possibilities[player][22] != 3:
-            for card in range(21):
-                if notecard[player][card] == ' ':
-                    self.set_card_owner(player, card)
+    def all_owned_found(self, player):
+        for card in range(21):
+            if notecard[player][card] != 'X' and notecard[player][card] != '-':
+                notecard[player][card] = '-'
+                self.update_answers(card)
+    
+    def all_unowned_found(self, player):
+        for card in range(21):
+            if notecard[player][card] == ' ' or notecard[player][card] == '*':
+                self.set_card_owner(player, card)
 
     def get_possibilities(self, player):
         tracker_3, tracker_4, tracker_5 = [], [], []
@@ -169,6 +172,25 @@ class NoteSheet():
             b.remove(a[0])
         if a[0] in c:
             c.remove(a[0])    
+    
+    def nine_possibilities(self, player, all_trackers):
+        if len(all_trackers) == 9:
+            for card in range(21):
+                if card not in all_trackers and notecard[player][card] == ' ':
+                    notecard[player][card] = '-'
+                    possibilities[player][23] += 1
+                    self.update_answers(card)
+    
+    def update_answers(self, card):
+        global answers
+        answers[card] -= 1
+        if answers[card] == 0 and 0 <= card <= 5:
+            answers[21] = notecard[0][card].strip()
+        elif answers[card] == 0 and 6 <= card <= 11:
+            answers[22] = notecard[0][card].strip()
+        elif answers[card] == 0 and 12 <= card <= 20:
+            answers[23] = notecard[0][card].strip()
+
 
     def answer_known(self):
         return answers[21] != '' and answers[22] != '' and answers[23] != ''
