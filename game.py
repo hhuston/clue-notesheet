@@ -10,6 +10,7 @@ class ClueGame():
             s, p, w, r, d = game_sheet.get_move_input()
             game_sheet.move(s, p, w, r, d)
         person, weapon, room = game_sheet.answer()
+        print(game_sheet)
         print('It was', person, 'with the', weapon, 'in the', room)
 
     def get_players(self):

@@ -21,7 +21,7 @@ class NoteSheet():
         for card in range(21):
             if card in user_cards:
                 notecard[len(notecard) - 1][card] = 'X'
-                map(lambda x, y = card: x.remove(y), unowned_cards)
+                self.update_unowned_cards(card)
                 for player in range(1, len(notecard) - 1):
                     notecard[player][card] = '-'
                     possibilities[player][23] += 1
@@ -124,13 +124,23 @@ class NoteSheet():
         
     def set_card_owner(self, owner, card):
         notecard[owner][card] = 'X'
-        map(lambda x: x.remove(card), unowned_cards)
+        self.update_unowned_cards(card)
         possibilities[owner][22] += 1
         for player in range(1, len(notecard) - 1):
             if player != owner and notecard[player][card] != '-':
                 notecard[player][card] = '-'
                 possibilities[player][23] += 1
                 self.update_answers(card)
+
+    def update_unowned_cards(self, card):
+        global unowned_cards
+        for i in range(3):
+            if card in unowned_cards[i]:
+                unowned_cards[i].remove(card)
+            if len(unowned_cards[i]) == 1:
+                answers[21 + i] = notecard[0][unowned_cards[i][0]].strip()
+                for player in range(1, len(notecard) - 1):
+                    notecard[player][unowned_cards[i][0]] = '-'
 
     # Check the logic in these
     def update_possibile_cards(self, player):
@@ -194,10 +204,6 @@ class NoteSheet():
             answers[22] = notecard[0][card].strip()
         elif answers[card] == 0 and 12 <= card <= 20:
             answers[23] = notecard[0][card].strip()
-        for i in range(3):
-            if len(unowned_cards[i]) == 1:
-                answers[21 + i] = unowned_cards[i][0]
-
 
     def answer_known(self):
         return answers[21] != '' and answers[22] != '' and answers[23] != ''
