@@ -1,20 +1,19 @@
 body {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
     background-color: bisque;
 }
 
+#page {
+    display: flex;
+    flex-wrap: wrap;
+
+}
+
 #notecard table {
-    align-content: center;
     max-width: 270px;
+    margin: auto;
 }
 
 #notecard {
-    flex: 1 1 50%;
-}
-
-#questions {
     flex: 1 1 50%;
 }
 
@@ -38,6 +37,18 @@ body {
     text-align: left;
 }
 
+#movementObtaining {
+    flex: 1 1 50%;
+    position: relative;
+}
+
+
+#movementObtaining button {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin-top: 20px;
+}
 #questions ul{
     list-style-type: none;
     padding: 0%;
@@ -51,12 +62,7 @@ body {
     text-align: center;
 }
 
-#question button {
-
-}
-
 #questions {
-    min-width: 700px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-evenly;
@@ -66,7 +72,7 @@ body {
     flex: 1 1 33%
 }
 
-@media (max-width: 500px) {
+@media (max-width: 700px) {
     #q1, #q2, #q3 {
         flex: 1 1 100%
     }
