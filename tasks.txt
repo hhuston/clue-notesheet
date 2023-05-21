@@ -1,0 +1,35 @@
+General Info:
+- 21 cards total
+- Each player can have will have NUM_CARDS_HAND cards
+- There will be NUM_CARDS_COMMUNAL communal cards which is equal to 21 - (NUM_PLAYERS * NUM_CARDS_HAND)
+- Each player will have a unowned_cards, owned_cards, and unknown_cards -> Their sum is 21
+- Each player has a disproving_list which is of length NUM_CARDS_HAND and each element is a length 3 array
+
+Algorithmic Tasks:
+- If a player has all unowned or owned cards accounted for
+    - 21 - unowned_cards == NUM_CARDS_HAND then assign the rest to owned
+    - owned_cards == NUM_CARDS_HAND then assign the rest to unowned
+- If a card gains an owner
+    - Increase their owned card count
+    - Assign that card to unowned for all other players
+    - Check the category to see if there is only one option left -> That is the answer
+- If no one can disprove a card
+    - Assign that card as the answer
+- If a card is assigned as an answer
+    - Set that card as unowned for every other player
+- If someone disproves something
+    - If there is only one card they could have possibly used, then assigned that card as owned
+    - Add the cards to the player's disproving_list in the first open space on the left (keep an index tracker to speed it up)
+- If a player is assigned an unowned card
+    - Increase their unowned card count
+    - If that card is in their disproving_list then remvove it
+
+- At the end of each turn
+    - Check each player's disproving_list and if there is an element with a list of length 1 then set that card to owned
+
+New idea
+Instead of a disproving_list have a list of all the cards and have the elements be integers
+For each card:
+- 0 means it is unknown, -1 means it is unowned, 1 means it is owned, sidon set on positive numbers > 1 to find out if they may own it
+- At the start, compute a sidon set and then return the a list of lists where each element is the list of possible values that include a value in it.
+    - For example, the set 2, 4, 8 would return the list [[2,6,10,14], [4,6,12,14], [8,10,12,14]] -> There's probably an alogrim to figure that out semi-quickly
