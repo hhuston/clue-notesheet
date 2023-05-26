@@ -32,4 +32,18 @@ Instead of a disproving_list have a list of all the cards and have the elements 
 For each card:
 - 0 means it is unknown, -1 means it is unowned, 1 means it is owned, sidon set on positive numbers > 1 to find out if they may own it
 - At the start, compute a sidon set and then return the a list of lists where each element is the list of possible values that include a value in it.
-    - For example, the set 2, 4, 8 would return the list [[2,6,10,14], [4,6,12,14], [8,10,12,14]] -> There's probably an alogrim to figure that out semi-quickly
+    - For example, the set 2, 4, 8 would return the list [[2,6,10,14], [4,6,12,14], [8,10,12,14]]
+    - There's probably an alogrim to figure that out semi-quickly
+
+Game class:
+- global list of Player objects
+- global list of the cards where each element is the number of people who are unown or own that card.
+- Constructor that gets the names of the players, user's cards, and communal cards
+- Play method that loops through until an swer is found
+- Find answer method that checks if an answer can be found
+    
+
+Player class:
+- global list with length of 21 -> each element is a card
+    - Use the numbers I said above to track the cards in that list
+- Init method sets up the list and sets every element to 0
