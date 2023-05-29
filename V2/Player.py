@@ -23,24 +23,26 @@ class Player:
         return self.cards[card_number]
 
     def analyze_hand(self, CARDS_PER_HAND : int, sidon_sum : int) -> list[int]:
-        new_owned = []
+        changes = []
 
         # See if all owned or unowned cards are accounted for
         if owned_cards == CARDS_PER_HAND:
+            changes += [-1]
             for i in range(21):
                 if cards[i] != 1:
                     self.set_unowned(i)
         elif unowned_cards == 21 - CARDS_PER_HAND:
+            changes += [1]
             for i in range(21):
                 if cards[i] != -1:
                     self.set_owned(i)
-                    new_owned += [i]        
+                    changes += [i]        
         else:
             for i in range(21):
                 if cards[i] == sidon_sum:
                     self.set_owned(i)
-                    new_owned += [i]
-        return new_owned
+                    changes += [i]
+        return changes
     
     def output(self) -> list[str]:
         def to_printable(x : int) -> str:
