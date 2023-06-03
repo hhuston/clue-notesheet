@@ -1,4 +1,4 @@
-from Player import Player
+from V2.Player import Player
 
 class Game:
 

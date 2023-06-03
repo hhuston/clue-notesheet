@@ -1,0 +1,53 @@
+Only use one file, no classes because they make things too complicated
+Have a 2D array for the gameboard, 23 x players
+    The outer array will have length num_players + 1 and the inner arrays will have length 24
+    In the first index, the list will have '' in the first spot then the card names
+    In the player lists, it will have the player name and then values representing their relation to the card, and finally their next sidon value
+        -1 for unknown relation
+        0 for unowned
+        1 for owned
+        A value computed from the sidon set
+        The number of owned cards
+        The number of unowned cards
+
+MILESTONES:
+
+BASE FUNCTIONALITY:
+ 
+    Build Table: 
+        Have a table of card names and players with empty, X, or - boxes based on relation to card
+
+    Print Table:
+        Print the table in the format of the first letter of the player names on top, card names on the left, and then
+        for each player's relation to a card put ' ' for 0 spaces, '*' for anything greater than 1, "X" for 1, and "-" for -1
+
+    Set card owner:
+        Change the value of that player's relation to a card to 1 and set the rest to 0
+
+    Set card as not owned:
+        Change the value of that player's relation to the card to 0
+
+    Set possible owner:
+        Change the value of that player's relation to the card as the current value + the value of their next sidon value
+        Change the sidon value (Probably just multiply it by 2)
+
+PLAYER LEVEL ALGORITHMIC FUNCTIONALITY:
+
+    All Owned Cards Found:
+        If the user's owned cards is equal to the max number of cards then set the rest to unowned
+
+    All Unowned Cards Found:
+        If the user's unowned cards is equal to 21 - max number of cards then set the rest to owned and you have to update that for
+        the rest of the players too
+    
+    Card used for all disprovals:
+        If a player's relation to a card is equal to the sidon sum then that player should own the card and then update that for
+        the rest of the players too
+
+GAME LEVEL ALGORITHMIC FUNCTIONALITY:
+
+    Find Answer Cards:
+        Search through each card and if everyone does not own it then set it as the answer. If some one owns every other card in
+        the category then also set that as the answer.
+        Use a list of 3 elements as the answers. Each category has its own index
+            Only do answer checking on the categories that haven't been found
