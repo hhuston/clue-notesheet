@@ -9,6 +9,8 @@ Have a 2D array for the gameboard, 23 x players
         A value computed from the sidon set
         The number of owned cards
         The number of unowned cards
+Write the program like a script
+    Maybe have methods for the testable things and then write tests for those
 
 MILESTONES:
 
@@ -17,37 +19,97 @@ BASE FUNCTIONALITY:
     Build Table: 
         Have a table of card names and players with empty, X, or - boxes based on relation to card
 
+        Not a method
+
     Print Table:
         Print the table in the format of the first letter of the player names on top, card names on the left, and then
         for each player's relation to a card put ' ' for 0 spaces, '*' for anything greater than 1, "X" for 1, and "-" for -1
 
+        def print_table() -> returns a string
+
     Set card owner:
         Change the value of that player's relation to a card to 1 and set the rest to 0
 
+        def set_owner(player, card) -> changes table variable along the card row
+
     Set card as not owned:
         Change the value of that player's relation to the card to 0
+
+        def set_unowned(player, card) -> changes table entry of player, card to 0
 
     Set possible owner:
         Change the value of that player's relation to the card as the current value + the value of their next sidon value
         Change the sidon value (Probably just multiply it by 2)
 
+        def set_possible(player, card) -> Update table with guidlines above
+
+    Compute sidon sum:
+        Using the number of cards that a player should own compute the value the sum of the entire sidon sum. The sum should be
+        equal to 2^(card_per_hand + 1)-2
+
+        Not a method
+
+    Play game:
+        Iterate through all of the players and prompt the user to input that round's guess and answer. If a player is
+        eliminated from the game then remove that player from the game
+
 PLAYER LEVEL ALGORITHMIC FUNCTIONALITY:
 
     All Owned Cards Found:
-        If the user's owned cards is equal to the max number of cards then set the rest to unowned
+        If the user's number of owned cards is equal to the max number of cards then set the rest to unowned
+
+        def check_all_owned() -> Checks each user's owned card entry and sees if it is equal to the const value. If so changes
+            all relations that aren't owned to 0 and updates unowned_cards box. Does this for each user unless their unowned and
+            owned together equal 21
 
     All Unowned Cards Found:
         If the user's unowned cards is equal to 21 - max number of cards then set the rest to owned and you have to update that for
         the rest of the players too
+
+        def check_all_unowned() -> does the opposite of all owned cards
     
     Card used for all disprovals:
         If a player's relation to a card is equal to the sidon sum then that player should own the card and then update that for
         the rest of the players too
 
+        def check_with_sidon() -> checks every card for each user to see if any card's relation is equal to the sidon sum and then if it is
+            then that card is set to owned
+
 GAME LEVEL ALGORITHMIC FUNCTIONALITY:
 
+    Get SKipped Plauers:
+        When a player guesses cards record the player that disproves them. Then compute the players that were skipped
+
+        def get_skipped_players(guesser, dipsrover) -> returns the a list of each player that was skipped
+
     Find Answer Cards:
-        Search through each card and if everyone does not own it then set it as the answer. If some one owns every other card in
+        Search through each card and if everyone does not own it then set it as the answer. If someone owns every other card in
         the category then also set that as the answer.
         Use a list of 3 elements as the answers. Each category has its own index
             Only do answer checking on the categories that haven't been found
+
+        def find_answer() -> make a list for each category of card, if a card is unknown then add it to the list. If a card is
+            definitely owned then don't add it to the list. If it is definitely unowned then set that as the answer and move on
+            to the next category. If the end of a category is reached then check the list of unkown cards and if there is only one
+            then that is the answer
+
+Code Format:
+
+Print startup
+Get Players, users cards, communal cards
+Compue the number of cards per player
+Compute the sidon sum
+Set up the table with all of the players
+    For the last player (user) set everything to 0 and then go back to set things that they said to 1 and also communal cards
+
+Get who is guessing first
+Start game loop
+    Print who is guess
+    Get their guess and disprover
+    get_skipped_players()
+    For each player skipped
+        3x set_unowned(player, card)
+    For disprover
+        set possible owner for all cards in list of guessed cards. If they don't own 2 of those cards then set the last on to owned
+
+HEY DUMBASS YOU FORGOT TO WRITE METHOD TO CHECK IF THERE WAS ONLY ONE POSSIBLE DISPROVING CARD LEFT AND THEN SET THAT TO OWNED
