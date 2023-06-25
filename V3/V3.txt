@@ -43,6 +43,12 @@ BASE FUNCTIONALITY:
 
         def set_possible(player, card) -> Update table with guidlines above
 
+    Compute Sidon Lists:
+        Make a list of cards_per_hand elements where each element is a list. Each list should contain the possible relations that
+        a cell could have to be a part of that sidon number's disproval group
+
+        def get_sidon_lists(cards_per_hand)
+
     Compute sidon sum:
         Using the number of cards that a player should own compute the value the sum of the entire sidon sum. The sum should be
         equal to 2^(card_per_hand + 1)-2
@@ -75,9 +81,12 @@ PLAYER LEVEL ALGORITHMIC FUNCTIONALITY:
         def check_with_sidon() -> checks every card for each user to see if any card's relation is equal to the sidon sum and then if it is
             then that card is set to owned
 
+    Card is only possible disproval left:
+        Check if there is only one possible card left for a disproval turn. Use the sidon set list 
+
 GAME LEVEL ALGORITHMIC FUNCTIONALITY:
 
-    Get SKipped Plauers:
+    Get Skipped Plauers:
         When a player guesses cards record the player that disproves them. Then compute the players that were skipped
 
         def get_skipped_players(guesser, dipsrover) -> returns the a list of each player that was skipped
@@ -98,7 +107,7 @@ Code Format:
 Print startup
 Get Players, users cards, communal cards
 Compue the number of cards per player
-Compute the sidon sum
+Compute the sidon sum and sidon lists
 Set up the table with all of the players
     For the last player (user) set everything to 0 and then go back to set things that they said to 1 and also communal cards
 
@@ -112,4 +121,4 @@ Start game loop
     For disprover
         set possible owner for all cards in list of guessed cards. If they don't own 2 of those cards then set the last on to owned
 
-HEY DUMBASS YOU FORGOT TO WRITE METHOD TO CHECK IF THERE WAS ONLY ONE POSSIBLE DISPROVING CARD LEFT AND THEN SET THAT TO OWNED
+    
