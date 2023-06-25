@@ -113,12 +113,19 @@ Set up the table with all of the players
 
 Get who is guessing first
 Start game loop
-    Print who is guess
-    Get their guess and disprover
+    Print who is guessing
+    Get their guess and disprover (they can also answer in which case you say if they won or not)
     get_skipped_players()
     For each player skipped
         3x set_unowned(player, card)
     For disprover
-        set possible owner for all cards in list of guessed cards. If they don't own 2 of those cards then set the last on to owned
+        set possible owner for all cards in list of guessed cards. If they don't own 2 of those cards then set the last one to owned
 
-    
+    For each player check if there a deduction can be made (forwards then backwards)
+        All unowned or owned cards found
+        Check disproval sets
+
+    Check if answer is found
+        Break if found
+
+    Loop
