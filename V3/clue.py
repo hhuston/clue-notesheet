@@ -14,17 +14,37 @@ card_options = ("1 - " + cards[0] + ''   + "7  - " + cards[6]  + ''   + "13 - " 
 print("-----------------------------------CLUE NOTESHEET-----------------------------------")
 players = input("Enter the names of the players in order, with your name last, separated by spaces:\n\t")
 players = [x.strip() for x in players.split(" ")]
+NUM_PLAYERS = len(players)
 
 print()
 print(card_options)
-user_cards = input("Enter the numbers of your cards separated by spaces:\n\t")
+user_cards = input("Enter the numbers of your cards, separated by spaces:\n\t")
 user_cards = [int(x.strip()) for x in user_cards.split(" ")]
 CARDS_PER_HAND = len(user_cards)
-communal_cards = input("Enter the numbers of the communal cards separated by spaces. If none just press enter:\n\t")
+communal_cards = input("Enter the numbers of the communal cards, separated by spaces. If none just press enter:\n\t")
 user_cards += [int(x.strip()) for x in communal_cards.split(" ")]
 
 #Get the Sidon Sum and Sidon Lists
+temp_list = [2*x for x in range(1,NUM_PLAYERS)]
 SIDON_SUM = pow(2, CARDS_PER_HAND + 1) - 2
-SIDON_LISTS = []
+sidon_lists = []
 for i in range(CARDS_PER_HAND):
+
+# Example Sidon lists for 1 cards per hand
+# [[2]]
      
+# Example Sidon lists for 2 cards per hand
+# [[2, 6], [4, 6]]
+
+# Example Sidon lists for 3 cards per hand
+# [[2, 6, 10, 14], [4, 6, 12, 14], [8, 10, 12, 14]]
+# Rewrite
+# [[(14 - 8 - 4), (14 - 8), (14 - 4), 14], 
+# [(14 - 8 - 2), (14 - 8), (14 - 2), 14],
+# [(14 - 4 - 2), (14 - 4), (14 - 2), 14]]
+
+# Example Sidon lists for 4 cards per hand
+# [[2, 6, 10, 14, 18, 22, 26, 30], [4, 6, 12, 14, 20, 22, 28, 30],
+#  [8, 10, 12, 14, 24, 26, 28, 30], [16, 18, 20, 24, 26, 28, 30]]
+# Rewrite
+# [[(30 - 16 - 8 - 4), (30 - 16 - 8), (30 - 16 - 4), (30 - 16), (30 - 8 - 4), (30 - 8), (30 - 4), 30]]

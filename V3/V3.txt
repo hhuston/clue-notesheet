@@ -86,7 +86,7 @@ PLAYER LEVEL ALGORITHMIC FUNCTIONALITY:
 
 GAME LEVEL ALGORITHMIC FUNCTIONALITY:
 
-    Get Skipped Plauers:
+    Get Skipped Players:
         When a player guesses cards record the player that disproves them. Then compute the players that were skipped
 
         def get_skipped_players(guesser, dipsrover) -> returns the a list of each player that was skipped
