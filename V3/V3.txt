@@ -3,8 +3,8 @@ Have a 2D array for the gameboard, 23 x players
     The outer array will have length num_players + 1 and the inner arrays will have length 24
     In the first index, the list will have '' in the first spot then the card names
     In the player lists, it will have the player name and then values representing their relation to the card, and finally their next sidon value
-        -1 for unknown relation
-        0 for unowned
+        0 for unknown relation
+        -1 for unowned
         1 for owned
         A value computed from the sidon set
         The number of owned cards
