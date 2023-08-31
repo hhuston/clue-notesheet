@@ -15,9 +15,11 @@ def set_unowned(player, card):
         table[player][23] += 1
 def set_owned(player, card):
     for others in range(1, NUM_PLAYERS + 1):
-        set_unowned(others, card)
-    table[player][card] = 1
-    table[player][22] += 1
+        if others != player:
+            set_unowned(others, card)
+    if table[player][card] != 1:
+        table[player][card] = 1
+        table[player][22] += 1
 
 def print_table():
     notecard = "\n\n\n" + '=' * 18 + '=' * NUM_PLAYERS * 4 + "\n"
@@ -95,13 +97,13 @@ guessing_player = int(input("\nEnter the number of the player who is going first
 eliminated_players = []
 print("\n\n------------------------------------------------------------------------------------\n\n")
 
-answer = ["","",""]
+answer = [0,0,0]
 
 # Gameplay loop
 while True:
     print_table()
-    if "" not in answer:
-        print("It was " + answer[0] + " with the " + answer[1] + " in the " + answer[2])
+    if 0 not in answer:
+        print("It was " + table[0][answer[0]] + " with the " + table[0][answer[1]] + " in the " + table[0][answer[2]])
 
     print("It is " + players[guessing_player - 1] + "'s turn to guess\n\n")
     print(CARD_OPTIONS)
@@ -124,19 +126,19 @@ while True:
     # If no one could disprove the guess, set all the other players to not own any of the cards
     if disprover == NUM_PLAYERS + 1:
         for player in range(1, NUM_PLAYERS + 1):
-            if player != disprover and player != USER_INDEX:
+            if player != guessing_player and player != USER_INDEX:
                 for card in guessed_cards:
                     set_unowned(player, card)
     # If someone did disprove then set the people before the disprove as unowned for those cards
     else:
-        temp = guessing_player
-        while temp != disprover:
-            if temp != USER_INDEX and temp != guessing_player:
-                for card in guessed_cards:
-                    set_unowned(temp, card)
-            temp += 1
-            if temp == NUM_PLAYERS:
-                temp = 1
+        skipped_player = guessing_player + 1
+        while skipped_player != disprover:
+            if skipped_player >= USER_INDEX:
+                skipped_player = 1
+                continue
+            for card in guessed_cards:
+                set_unowned(skipped_player, card)
+            skipped_player += 1
     
         # If you were the guesser you know what the shown card is
         if guessing_player == USER_INDEX and disprover != NUM_PLAYERS + 1:
@@ -218,38 +220,50 @@ while True:
 
     # Check if the answer is found
     # Person
-    if answer[0] != "":
+    if answer[0] == 0:
         player_answer = []
         for card in range(1, 7):
             owned = False
+            card_sum = 0
             for player in range(1, NUM_PLAYERS + 1):
                 if table[player][card] == 1:
                     owned = True
+                card_sum += table[player][card]
             if not owned:
                 player_answer += [card]
-        if len(player_answer) == 1:
+            if card_sum == NUM_PLAYERS * -1:
+                answer[0] = card
+        if answer[0] == 0 and len(player_answer) == 1:
             answer[0] = player_answer[0]
-    if answer[1] != "":
+    if answer[1] == 0:
         weapon_answer = []
         for card in range(7, 13):
             owned = False
+            card_sum = 0
             for player in range(1, NUM_PLAYERS + 1):
                 if table[player][card] == 1:
                     owned = True
+                card_sum += table[player][card]
             if not owned:
                 weapon_answer += [card]
-        if len(weapon_answer) == 1:
+            if card_sum == NUM_PLAYERS * -1:
+                answer[1] = card
+        if answer[1] == 0 and len(weapon_answer) == 1:
             answer[1] = weapon_answer[0]
-    if answer[2] != "":
+    if answer[2] == 0:
         room_answer = []
         for card in range(13, 22):
             owned = False
+            card_sum = 0
             for player in range(1, NUM_PLAYERS + 1):
                 if table[player][card] == 1:
                     owned = True
+                card_sum += table[player][card]
             if not owned:
                 room_answer += [card]
-        if len(room_answer) == 1:
+            if card_sum == NUM_PLAYERS * -1:
+                answer[2] = card
+        if answer[2] == 0 and len(room_answer) == 1:
             answer[2] = room_answer[0]
 
     guessing_player += 1
