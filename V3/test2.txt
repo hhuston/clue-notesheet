@@ -1,13 +1,10 @@
 Winnie Heather Julia Steve Harrison
 1 7 13
-6 12 21
+21 12 6
 2
-1 7 18
-6
-n
-1 7 17
-3
-n
-2 10 18
-2
-n
+5 10 15
+4
+N
+3 10 15
+1
+N

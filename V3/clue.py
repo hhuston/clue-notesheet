@@ -10,8 +10,9 @@ CARD_OPTIONS = ""
 box_fillers = {0: " ", -1 : "-", 1 : "X"}
 
 def set_unowned(player, card):
-    table[player][card] = -1
-    table[player][23] += 1
+    if table[player][card] != -1:
+        table[player][card] = -1
+        table[player][23] += 1
 def set_owned(player, card):
     for others in range(1, NUM_PLAYERS + 1):
         set_unowned(others, card)
@@ -64,7 +65,7 @@ if communal_cards != "":
     user_cards += [int(x.strip()) for x in (communal_cards.strip()).split(" ")]
 
 # Build the table
-table = [["\t\t"] + CARDS] + [[players[x][0]] + [0 for x in range (21)] + [0,0,2] for x in range(NUM_PLAYERS)]
+table = [["\t\t"] + CARDS] + [[players[x][0]] + [0 for x in range (21)] + [0,0,-1] for x in range(NUM_PLAYERS)]
 
 for card in range(1, 22):
     if card in user_cards:
@@ -74,6 +75,9 @@ for card in range(1, 22):
 # temp_list = [2*x for x in range(1,NUM_PLAYERS)]
 # SIDON_SUM = pow(2, CARDS_PER_HAND + 1) - 2
 # sidon_lists = []
+
+sidon_set = [2,4,8]
+sidon_lists = [[2,6,10,14], [4,6,12,14], [8,10,12,14]]
 
 for card in range(1,22):
     if card in user_cards:
@@ -91,9 +95,13 @@ guessing_player = int(input("\nEnter the number of the player who is going first
 eliminated_players = []
 print("\n\n------------------------------------------------------------------------------------\n\n")
 
+answer = ["","",""]
+
 # Gameplay loop
 while True:
     print_table()
+    if "" not in answer:
+        print("It was " + answer[0] + " with the " + answer[1] + " in the " + answer[2])
 
     print("It is " + players[guessing_player - 1] + "'s turn to guess\n\n")
     print(CARD_OPTIONS)
@@ -145,34 +153,107 @@ while True:
                     set_owned(disprover, card)
         # If the disprover is not known to own any of the cards then add the next disproval level from the sidon set to their value
         elif table[disprover][guessed_cards[0]] != 1 and table[disprover][guessed_cards[1]] != 1 and table[disprover][guessed_cards[2]] != 1:
+            table[disprover][24] += 1
             for card in guessed_cards:
                 if table[disprover][card] != -1:
                     table[disprover][card] += sidon_set[table[disprover][24]]
-                    table[disprover][24] += 1
+            
     
     # Start checking for deductions
-    board_changed = [True] * NUM_PLAYERS + 1
+    board_changed = [False] + [True] * (NUM_PLAYERS -1)
     def board_was_changed(player):
-        for i in range(1, NUM_PLAYERS + 1):
+        for i in range(1, NUM_PLAYERS):
             if i != player:
                 board_changed[i] = True
     
     checking_player = 1
     while True in board_changed:
-        board_changed[checking_player] = False
-        if table[checking_player][22] + table[checking_player][23] == 21:
+        if table[checking_player][22] + table[checking_player][23] == 21 or board_changed[checking_player] == False:
+            board_changed[checking_player] = False
+            checking_player += 1
+            if checking_player == USER_INDEX:
+                checking_player = 1
             continue
+
+        board_changed[checking_player] = False
+
         # Sidon set stuff
+        if table[checking_player][24] != -1:
+            disprovals = [[]] * (table[checking_player][24] + 1)
+            # Start by looping through the cards and adding them to their corresponding disproval groups
+            # Then check if any of the groups only has one card in it
+            # Save that card's number and see if it is in any other group
+            # If it is then subtract that group's value from all of those cards
+            # Set the saved card to owned and call board_was_changed()
+            for i in range(len(disprovals)):
+                for card in range(1,22):
+                    if table[checking_player][card] in sidon_lists[i]:
+                        disprovals[i] += [card]
+            for i in range(len(disprovals)):
+                if len(disprovals[i]) == 1:
+                    owned_card = disprovals[i][0]
+                    for j in range(len(disprovals)):
+                        if table[checking_player][owned_card] in sidon_lists[j]:
+                            map(lambda x: table[checking_player][x] - sidon_set[j], sidon_lists[j])
+                            sidon_lists[j] = []
+                    set_owned(checking_player, owned_card)
+                    board_was_changed(checking_player)
+                
 
         # If all of the owned or unowned cards have been found, fill in the rest
-        
-        if table[checking_player][22] == 3:
+        if table[checking_player][22] == CARDS_PER_HAND:
             for card in range(1,22):
                 if table[checking_player][card] == 0:
                     set_unowned(checking_player, card)
-        elif table[checking_player][23] == 18:
+        elif table[checking_player][23] == 21 - CARDS_PER_HAND:
             board_was_changed(checking_player)
             for card in range(1,22):
                 if table[checking_player][card] == 0:
                     set_owned(checking_player, card)
 
+        checking_player += 1
+        if checking_player == USER_INDEX:
+            checking_player = 1
+
+
+    # Check if the answer is found
+    # Person
+    if answer[0] != "":
+        player_answer = []
+        for card in range(1, 7):
+            owned = False
+            for player in range(1, NUM_PLAYERS + 1):
+                if table[player][card] == 1:
+                    owned = True
+            if not owned:
+                player_answer += [card]
+        if len(player_answer) == 1:
+            answer[0] = player_answer[0]
+    if answer[1] != "":
+        weapon_answer = []
+        for card in range(7, 13):
+            owned = False
+            for player in range(1, NUM_PLAYERS + 1):
+                if table[player][card] == 1:
+                    owned = True
+            if not owned:
+                weapon_answer += [card]
+        if len(weapon_answer) == 1:
+            answer[1] = weapon_answer[0]
+    if answer[2] != "":
+        room_answer = []
+        for card in range(13, 22):
+            owned = False
+            for player in range(1, NUM_PLAYERS + 1):
+                if table[player][card] == 1:
+                    owned = True
+            if not owned:
+                room_answer += [card]
+        if len(room_answer) == 1:
+            answer[2] = room_answer[0]
+
+    guessing_player += 1
+    if guessing_player in eliminated_players:
+        guessing_player += 1
+    if guessing_player > NUM_PLAYERS:
+        guessing_player = 1
