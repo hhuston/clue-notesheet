@@ -73,11 +73,6 @@ for card in range(1, 22):
     if card in user_cards:
         set_owned(USER_INDEX, card)
 
-#Get the Sidon Sum and Sidon Lists
-# temp_list = [2*x for x in range(1,NUM_PLAYERS)]
-# SIDON_SUM = pow(2, CARDS_PER_HAND + 1) - 2
-# sidon_lists = []
-
 sidon_set = [2,4,8]
 sidon_lists = [[2,6,10,14], [4,6,12,14], [8,10,12,14]]
 
@@ -105,23 +100,36 @@ while True:
     if 0 not in answer:
         print("It was " + table[0][answer[0]] + " with the " + table[0][answer[1]] + " in the " + table[0][answer[2]])
 
-    print("It is " + players[guessing_player - 1] + "'s turn to guess\n\n")
+    print("It is " + players[guessing_player - 1] + "'s turn to guess\n\n")        
     print(CARD_OPTIONS)
-    guessed_cards = input("Enter the cards that " + players[guessing_player - 1] + " guessed, separated by spaces:\n\t")
+    guessed_cards = input("Enter the cards that " + players[guessing_player - 1] + " guessed, separated by spaces. Enter 0 if they did not guess:\n\t")
     guessed_cards = [int(card.strip()) for card in guessed_cards.strip().split(" ")]
+    if guessed_cards[0] == 0:
+        guessing_player += 1
+        if guessing_player in eliminated_players:
+            guessing_player += 1
+        if guessing_player > NUM_PLAYERS:
+            guessing_player = 1
+        continue
 
     print()
     print_players()
-    print("\t" + str(NUM_PLAYERS + 1) + " - No disprover\n")
+    print("\t" + str(NUM_PLAYERS + 1) + " - No disprover\n\t" + str(NUM_PLAYERS + 2) + " - " + players[guessing_player - 1] + " is making an accusation")
     disprover = int(input("Enter the number of the person who disproved the guess:\n\t").strip())
 
     # If the player makes an accusation then the game either ends or they are removed from the guessing rotation
-    if input("Is " + players[guessing_player - 1] + " making and accusation? (Y/N): \n\t").strip().upper() == "Y":
+    if disprover == NUM_PLAYERS + 2:
         if input("Was " + players[guessing_player - 1] + "'s accusation correct? (Y/N): \n\t").strip().upper() == "Y":
             print(players[guessing_player - 1] + " wins!")
             break
         else:
             eliminated_players += [guessing_player]
+            guessing_player += 1
+            if guessing_player in eliminated_players:
+                guessing_player += 1
+            if guessing_player > NUM_PLAYERS:
+                guessing_player = 1
+            continue
 
     # If no one could disprove the guess, set all the other players to not own any of the cards
     if disprover == NUM_PLAYERS + 1:
