@@ -35,8 +35,6 @@ def print_table():
         if card in [0, 6, 12, 21]:
             notecard += '=' * 18 + '=' * NUM_PLAYERS * 4 + "\n"
     print(notecard)
-    
-
 
 CARDS = ['Col. Mustard\t', 'Prof. Plum\t','Mr. Green\t', 'Mrs. Peacock\t', 'Miss Scarlet\t', 'Mrs. White\t', 
                    'Knife\t', 'Candlestick\t', 'Revolver\t', 'Rope\t\t', 'Lead Pipe\t', 'Wrench\t', 
@@ -59,12 +57,28 @@ USER_INDEX = NUM_PLAYERS
 
 print()
 print(CARD_OPTIONS)
-user_cards = input("Enter the numbers of your cards, separated by spaces:\n\t")
-user_cards = [int(x.strip()) for x in (user_cards.strip()).split(" ")]
+while True:
+    user_cards = input("Enter the numbers of your cards, separated by spaces:\n\t")
+    try:
+        user_cards = [int(x.strip()) for x in (user_cards.strip()).split(" ")]
+    except:
+        print("Please enter only numbers and spaces\n")
+    else:
+        break
+
 CARDS_PER_HAND = len(user_cards)
-communal_cards = input("Enter the numbers of the communal cards, separated by spaces. If there are none just press enter:\n\t")
-if communal_cards != "":
-    user_cards += [int(x.strip()) for x in (communal_cards.strip()).split(" ")]
+while True:
+    communal_cards = input("Enter the numbers of the communal cards, separated by spaces. If there are none just press enter:\n\t")
+    if communal_cards != "":
+        try:
+            user_cards += [int(x.strip()) for x in (communal_cards.strip()).split(" ")]
+        except:
+            print("Please only enter numbers and spaces\n")
+        else:
+            break
+    else:
+        break
+    
 
 # Build the table
 table = [["\t\t"] + CARDS] + [[players[x][0]] + [0 for x in range (21)] + [0,0,-1] for x in range(NUM_PLAYERS)]
@@ -73,8 +87,8 @@ for card in range(1, 22):
     if card in user_cards:
         set_owned(USER_INDEX, card)
 
-sidon_set = [2,4,8]
-sidon_lists = [[2,6,10,14], [4,6,12,14], [8,10,12,14]]
+sidon_set = [2,3,4,8]
+sidon_lists = [[2,5,6,10,9,13,14,17], [3,5,7,9,11,13,15,17], [4,6,7,12,9,14,15,17], [8,10,11,12,13,14,15,17]]
 
 for card in range(1,22):
     if card in user_cards:
@@ -88,7 +102,18 @@ def print_players():
         print("\t" + str(i + 1) + " - " + players[i])
 
 print_players()
-guessing_player = int(input("\nEnter the number of the player who is going first:\n\t").strip())
+guessing_player = 0
+while True:
+    try:
+        guessing_player = int(input("\nEnter the number of the player who is going first:\n\t").strip())
+    except:
+        print("Please enter a number\n")
+    else:
+        if guessing_player > 0 and guessing_player <= USER_INDEX:
+            break
+        else:
+            print("The number you entered is out of range")
+
 eliminated_players = []
 print("\n\n------------------------------------------------------------------------------------\n\n")
 
@@ -115,7 +140,16 @@ while True:
     print()
     print_players()
     print("\t" + str(NUM_PLAYERS + 1) + " - No disprover\n\t" + str(NUM_PLAYERS + 2) + " - " + players[guessing_player - 1] + " is making an accusation")
-    disprover = int(input("Enter the number of the person who disproved the guess:\n\t").strip())
+    while True:
+        try:
+            disprover = int(input("Enter the number of the person who disproved the guess:\n\t").strip())
+        except:
+            print("Please enter a number\n")
+        else:
+            if guessing_player > 0 and guessing_player <= NUM_PLAYERS + 2:
+                break
+            else:
+                print("The number you entered is out of range")
 
     # If the player makes an accusation then the game either ends or they are removed from the guessing rotation
     if disprover == NUM_PLAYERS + 2:
@@ -151,7 +185,17 @@ while True:
         # If you were the guesser you know what the shown card is
         if guessing_player == USER_INDEX and disprover != NUM_PLAYERS + 1:
             print(CARD_OPTIONS)
-            set_owned(disprover, int(input("Enter the number of the card that you were shown:\n\t").strip()))
+            while True: 
+                try:
+                    shown_card = int(input("Enter the number of the card that you were shown:\n\t").strip())
+                except:
+                    print("Please enter a number")
+                else:
+                    if shown_card > 0 and shown_card < 22:
+                        set_owned(disprover, shown_card)
+                        break
+                    else:
+                        print("The number you entered is out of rangsle")
     
         # If you weren't the guesser and the disprover does not have one of the cards
         # then assign a number to each of the possible cards that were shown
