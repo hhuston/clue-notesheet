@@ -49,7 +49,7 @@ Heather Finn Lily Sky Harrison
 0
 3 7 21
 4
-1 9 21 (Issue here, Finn should be known to have Green now maybe)
+1 9 21 (Issue here, Finn should be known to have Green now maybe) (need the case where the answer for that section is known and then there is only one possible owner for some other card)
 6
 1 12 15
 5

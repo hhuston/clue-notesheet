@@ -195,7 +195,7 @@ while True:
                         set_owned(disprover, shown_card)
                         break
                     else:
-                        print("The number you entered is out of rangsle")
+                        print("The number you entered is out of range")
     
         # If you weren't the guesser and the disprover does not have one of the cards
         # then assign a number to each of the possible cards that were shown
@@ -254,7 +254,7 @@ while True:
                     board_was_changed(checking_player)
                 
 
-        # If all of the owned or unowned cards have been found, fill in the rest
+        # If all of a player's owned or unowned cards have been found, fill in the rest
         if table[checking_player][22] == CARDS_PER_HAND:
             for card in range(1,22):
                 if table[checking_player][card] == 0:
